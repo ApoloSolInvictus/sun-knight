@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crónicas del Caballero Solar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- 
+        Chosen Palette: Manuscrito Templario (Pergamino, Rojo Sello, Oro Antiguo, Piedra Oscura)
+        Application Structure Plan: Se ha diseñado una estructura de "Crónica Interactiva". Una línea de tiempo vertical fija (en escritorio) y un menú desplegable (en móvil) actúan como el índice de un manuscrito antiguo. Cada entrada de la línea de tiempo corresponde a una de las imágenes y su historia. Al hacer clic, el contenido principal se actualiza dinámicamente. Esta arquitectura fue elegida para crear una experiencia narrativa e inmersiva, permitiendo al usuario explorar la saga del Caballero Solar de una manera ordenada pero flexible, como si estuviera pasando las páginas de una historia sagrada.
+        Visualization & Content Choices: La aplicación se centra en la narrativa visual y textual. Cada "capítulo" presenta una de las imágenes proporcionadas en alta calidad (Goal: Showcase). El texto que la acompaña narra la historia de esa encarnación (Goal: Inform). La interacción principal es la navegación por la línea de tiempo, que controla qué capítulo es visible (Goal: Organize, Engage). Un fondo sutil de lienzo (Canvas) con partículas de luz dorada evoca una atmósfera mística. Se incluye una sección clara sobre cómo publicar el sitio en GitHub.
+        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            background-color: #e8e0d4; /* Color Pergamino */
+            color: #3a2d21; /* Marrón Oscuro */
+        }
+        .font-cinzel { font-family: 'Cinzel Decorative', serif; }
+        
+        #particle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .main-content-area {
+            background-color: rgba(245, 241, 235, 0.8);
+            backdrop-filter: blur(4px);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+            padding-bottom: 40px;
+            cursor: pointer;
+        }
+        .timeline-item::before { /* La línea vertical */
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 5px;
+            bottom: -5px;
+            width: 2px;
+            background-color: #c9b8a2;
+        }
+        .timeline-item:last-child::before {
+            display: none;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #e8e0d4;
+            border: 3px solid #c9b8a2;
+            transition: all 0.3s ease;
+        }
+        .timeline-item.active .timeline-dot, .timeline-item:hover .timeline-dot {
+            background-color: #8c2d2d; /* Rojo Sello */
+            border-color: #8c2d2d;
+        }
+        .timeline-item.active .timeline-title {
+            color: #8c2d2d;
+        }
+
+        .story-content {
+            display: none;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        .story-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <canvas id="particle-bg"></canvas>
+
+    <div class="max-w-7xl mx-auto p-4 md:p-8">
+        <header class="text-center mb-12">
+            <h1 class="font-cinzel text-4xl md:text-6xl font-bold text-[#8c2d2d]">Crónicas del Caballero Solar</h1>
+            <p class="mt-4 text-lg text-gray-700">El Legado del Sol Invictus como Guardián de la Fe</p>
+        </header>
+
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Timeline Navigation -->
+            <aside class="w-full md:w-1/3 lg:w-1/4">
+                <div id="timeline-nav" class="bg-white/50 p-6 rounded-lg shadow-md">
+                    <h2 class="font-cinzel text-xl font-bold mb-6 text-[#5c3d2e]">Capítulos de la Saga</h2>
+                    <div class="timeline-item active" data-story="story1">
+                        <div class="timeline-dot"></div>
+                        <h3 class="timeline-title font-bold text-lg">El Sol Primordial</h3>
+                    </div>
+                    <div class="timeline-item" data-story="story2">
+                        <div class="timeline-dot"></div>
+                        <h3 class="timeline-title font-bold text-lg">El Rey Sol</h3>
+                    </div>
+                    <div class="timeline-item" data-story="story3">
+                        <div class="timeline-dot"></div>
+                        <h3 class="timeline-title font-bold text-lg">El Caballero Celestial</h3>
+                    </div>
+                    <div class="timeline-item" data-story="story4">
+                        <div class="timeline-dot"></div>
+                        <h3 class="timeline-title font-bold text-lg">El Santo Patrón</h3>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Story Content -->
+            <main id="story-container" class="w-full md:w-2/3 lg:w-3/4 main-content-area p-6 md:p-10 rounded-lg shadow-xl">
+                <!-- Story 1 -->
+                <article id="story1" class="story-content active">
+                    <h2 class="font-cinzel text-3xl font-bold text-[#8c2d2d] mb-4">El Sol Primordial: La Primera Promesa</h2>
+                    <img src="images/story1.jpg" alt="El Sol Primordial" class="w-full h-auto rounded-lg shadow-md mb-6 border-4 border-amber-800/20">
+                    <div class="text-lg space-y-4 text-gray-800">
+                        <p>En el alba de los tiempos, la conciencia del Sol se manifestó por primera vez como un caballero de luz pura. Su misión no era gobernar, sino servir. Su corcel, forjado de la misma luz estelar, lo llevaba a través de los reinos, no para conquistar, sino para anclar la frecuencia de la soberanía y la verdad. Su estandarte y su armadura, adornados con el Sol, no eran para la guerra, sino para recordar a toda la creación su origen divino. Esta fue la primera promesa: que la Luz siempre cabalgaría para proteger la vida.</p>
+                    </div>
+                </article>
+                <!-- Story 2 -->
+                <article id="story2" class="story-content">
+                    <h2 class="font-cinzel text-3xl font-bold text-[#8c2d2d] mb-4">Le Roy Soleil: El Rey Sol</h2>
+                    <img src="images/story2.jpg" alt="El Rey Sol" class="w-full h-auto rounded-lg shadow-md mb-6 border-4 border-amber-800/20">
+                    <div class="text-lg space-y-4 text-gray-800">
+                        <p>En una era de gran esplendor y oscuridad oculta, encarné como el Rey Sol. Mi propósito fue anclar la magnificencia del Orden Divino en el plano terrenal. El oro y la opulencia no eran un fin, sino un símbolo, un reflejo del Sol Central para inspirar a la humanidad a alcanzar su propia grandeza. Mi corte era un sistema solar en miniatura, donde las artes y las ciencias orbitaban alrededor de un centro de poder soberano, demostrando que un gobierno basado en la Luz podía crear una era de belleza y progreso sin precedentes.</p>
+                    </div>
+                </article>
+                <!-- Story 3 -->
+                <article id="story3" class="story-content">
+                    <h2 class="font-cinzel text-3xl font-bold text-[#8c2d2d] mb-4">El Caballero Celestial: Guardián de la Dualidad</h2>
+                    <img src="images/story3.jpg" alt="El Caballero Celestial" class="w-full h-auto rounded-lg shadow-md mb-6 border-4 border-amber-800/20">
+                    <div class="text-lg space-y-4 text-gray-800">
+                        <p>En tiempos de gran división, mi misión fue encarnar el equilibrio. Como el Caballero Celestial, mi armadura y estandarte portaban tanto el Sol como la Luna. No luchaba por uno contra el otro, sino por la **unión sagrada de ambos**. Cabalgaba entre los reinos del día y de la noche, de la lógica y la intuición, enseñando que la verdadera fuerza reside en la armonía de los opuestos. Mi promesa fue custodiar el equilibrio hasta que el Sol y la Luna pudieran reunirse en una sola conciencia.</p>
+                    </div>
+                </article>
+                <!-- Story 4 -->
+                <article id="story4" class="story-content">
+                    <h2 class="font-cinzel text-3xl font-bold text-[#8c2d2d] mb-4">S. Georgius: El Santo Patrón</h2>
+                    <img src="images/story4.jpg" alt="El Santo Patrón" class="w-full h-auto rounded-lg shadow-md mb-6 border-4 border-amber-800/20">
+                    <div class="text-lg space-y-4 text-gray-800">
+                        <p>Como San Jorge, Patrón y Protector, mi labor fue la más directa: enfrentar al Dragón. Esta bestia no era de carne y hueso, sino la encarnación del miedo, la tiranía y la conciencia reptiliana que mantenía al pueblo en cautiverio. Mi victoria no se logró con la fuerza de la espada, sino con el poder de la Fe. Al someter al Dragón, no lo aniquilé; lo transmuté, demostrando que la Luz del corazón, en humilde oración, tiene soberanía sobre la más profunda oscuridad. Esta fue la promesa cumplida: el Grial de la conciencia humana, liberado para siempre.</p>
+                    </div>
+                </article>
+            </main>
+        </div>
+        
+        <!-- GitHub Instructions -->
+        <section class="mt-16 bg-white/50 p-8 rounded-lg shadow-md">
+            <h2 class="font-cinzel text-2xl font-bold text-center text-[#5c3d2e] mb-6">Cómo Publicar esta Crónica</h2>
+            <div class="max-w-3xl mx-auto text-gray-700 space-y-3">
+                <p class="font-bold">Para manifestar este sitio en GitHub, sigue estos pasos:</p>
+                <ol class="list-decimal list-inside space-y-2">
+                    <li><strong>Guarda este archivo</strong> como `index.html`.</li>
+                    <li><strong>Crea una carpeta</strong> en el mismo lugar y llámala `images`.</li>
+                    <li><strong>Nombra y coloca tus imágenes</strong> dentro de la carpeta `images` con estos nombres exactos: `story1.jpg`, `story2.jpg`, `story3.jpg`, y `story4.jpg`.</li>
+                    <li><strong>Sube todo a un nuevo repositorio de GitHub.</strong></li>
+                    <li><strong>Activa GitHub Pages</strong> en la configuración de tu repositorio. Tu crónica estará viva para el mundo.</li>
+                </ol>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Particle Background ---
+            const canvas = document.getElementById('particle-bg');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = document.body.scrollHeight;
+            }
+            
+            function createParticles() {
+                particles = [];
+                const count = 100;
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        vx: (Math.random() - 0.5) * 0.2,
+                        vy: (Math.random() - 0.5) * 0.2,
+                        radius: Math.random() * 1.5,
+                        alpha: Math.random() * 0.5 + 0.2
+                    });
+                }
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(184, 134, 11, ${p.alpha})`;
+                    ctx.fill();
+                });
+                requestAnimationFrame(animateParticles);
+            }
+            
+            // --- Timeline Navigation Logic ---
+            const timelineNav = document.getElementById('timeline-nav');
+            const storyContainer = document.getElementById('story-container');
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const storyContents = document.querySelectorAll('.story-content');
+
+            function showStory(targetId) {
+                timelineItems.forEach(item => {
+                    item.classList.toggle('active', item.dataset.story === targetId);
+                });
+                storyContents.forEach(content => {
+                    content.classList.toggle('active', content.id === targetId);
+                });
+                // Recalculate canvas height after content change
+                setTimeout(resizeCanvas, 100);
+            }
+
+            timelineNav.addEventListener('click', (e) => {
+                const item = e.target.closest('.timeline-item');
+                if (item) {
+                    showStory(item.dataset.story);
+                }
+            });
+            
+            // Initial setup
+            resizeCanvas();
+            createParticles();
+            animateParticles();
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                createParticles();
+            });
+        });
+    </script>
+</body>
+</html>
